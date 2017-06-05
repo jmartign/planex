@@ -137,15 +137,6 @@ $(TOPDIR)/SOURCES/%/patches.tar: SPECS/%.lnk
 
 
 ############################################################################
-# Patch extraction rules
-############################################################################
-
-# Extract a spec file from a patch tarball.
-$(TOPDIR)/SPECS/%.spec: SPECS/%.lnk $(TOPDIR)/SOURCES/%/patches.tar
-	$(AT)$(EXTRACT) $(EXTRACT_FLAGS) --output $@ --link $^
-
-
-############################################################################
 # RPM build rules
 ############################################################################
 
