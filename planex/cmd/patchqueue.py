@@ -59,13 +59,10 @@ def assemble_patchqueue(tmpdir, link, repo, start_tag, end_tag):
 
 
 # pylint: disable=R0913
-def assemble_extra_sources(tmpdir, repo, spec, link, sources, patches):
+def assemble_extra_sources(tmpdir, repo, link, sources, patches):
     """
     Assemble the non-patchqueue sources in the working directory.
     """
-    if spec.path is not None and link.specfile is not None:
-        copy_to_tmpdir(tmpdir, spec.path, link.specfile)
-
     if link.sources is not None:
         for source in sources:
             source_path = os.path.join(repo, link.sources, source)
@@ -113,11 +110,8 @@ def main(argv=None):
     # but the tag name may be slightly different (v1.2.3 rather than 1.2.3)
     # If the link file does not list a spec file, assume that there is one in
     # the usual place
-    if link.specfile is not None:
-        spec_path = os.path.join(repo, link.specfile)
-    else:
-        basename = os.path.splitext(os.path.basename(args.link))[0]
-        spec_path = os.path.join("SPECS", "%s.spec" % basename)
+    basename = os.path.splitext(os.path.basename(args.link))[0]
+    spec_path = os.path.join("SPECS", "%s.spec" % basename)
     spec = Spec(spec_path)
 
     start_tag = link.base_commitish
@@ -129,7 +123,7 @@ def main(argv=None):
     try:
         tmpdir = tempfile.mkdtemp(prefix="px-pq-")
         assemble_patchqueue(tmpdir, link, repo, start_tag, end_tag)
-        assemble_extra_sources(tmpdir, repo, spec, link,
+        assemble_extra_sources(tmpdir, repo, link,
                                spec.local_sources(), spec.local_patches())
         with FileUpdate(args.tarball) as outfile:
             tarball.make(tmpdir, outfile)
